@@ -1,12 +1,14 @@
 package usecase
 
 import (
-	"github.com/golang-jwt/jwt/v5"
 	"go-rest-api/models"
 	"go-rest-api/repository"
-	"golang.org/x/crypto/bcrypt"
+	"go-rest-api/validator"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type IUserUsecase interface {
@@ -16,10 +18,11 @@ type IUserUsecase interface {
 
 type UserUsecase struct {
 	ur repository.IUserRepository
+	uv validator.IUserValidator
 }
 
-func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
-	return &UserUsecase{ur: ur}
+func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) IUserUsecase {
+	return &UserUsecase{ur: ur, uv: uv}
 }
 
 func (u UserUsecase) SignUp(input models.User) (models.UserResponse, error) {

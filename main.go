@@ -1,14 +1,28 @@
 package main
 
 import (
-	"fmt"
+	"go-rest-api/controller"
 	"go-rest-api/db"
-	"go-rest-api/models"
+	"go-rest-api/repository"
+	"go-rest-api/router"
+	"go-rest-api/usecase"
+	"go-rest-api/validator"
 )
 
 func main() {
-	dbConn := db.NewDB()
-	defer fmt.Println("Successfuly Migratde")
-	defer db.CloseDB(dbConn)
-	dbConn.AutoMigrate(&models.User{}, &models.Task{})
+	db := db.NewDB()
+
+	userRepository := repository.NewUserRepository(db)
+	userValidator := validator.NewUserValidator()
+	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
+	userController := controller.NewUserController(userUsecase)
+
+	taskRepository := repository.NewTaskRepository(db)
+	taskValidator := validator.NewTaskValidator()
+	taskUsecase := usecase.NewTaskUsecase(taskRepository, taskValidator)
+	taskController := controller.NewTaskController(taskUsecase)
+
+	server := router.NewRouter(userController, taskController)
+
+	server.Logger.Fatal(server.Start(":8080"))
 }

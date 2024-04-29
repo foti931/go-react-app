@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Task struct {
 	*gorm.Model `json:"*_gorm_._model,omitempty"`
@@ -10,6 +14,8 @@ type Task struct {
 }
 
 type TaskResponse struct {
-	ID    uint   `json:"id"`
-	Title string `json:"title"`
+	ID        uint      `json:"id"`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
