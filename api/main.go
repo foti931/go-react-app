@@ -24,5 +24,5 @@ func main() {
 
 	server := router.NewRouter(userController, taskController)
 
-	server.Logger.Fatal(server.Start(":8080"))
+	server.Logger.Fatal(server.Start(":8000"))
 }

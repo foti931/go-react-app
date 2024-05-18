@@ -70,6 +70,9 @@ func (t *tackController) GetAll(c echo.Context) error {
 	claims := user.Claims.(jwt.MapClaims)
 	userId := claims["user_id"]
 
+	c.Logger().Info("user_id: ", userId)
+	c.Logger().Info("claims: ", claims)
+
 	taskRes, err := t.tu.GetAllTasks(uint(userId.(float64)))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)

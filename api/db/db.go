@@ -13,7 +13,7 @@ import (
 func NewDB() *gorm.DB {
 	env := os.Getenv("GO_ENV")
 	if env == "dev" {
-		err := godotenv.Load()
+		err := godotenv.Load("/go/src/api/.env")
 		if err != nil {
 			log.Fatalln(err)
 		}

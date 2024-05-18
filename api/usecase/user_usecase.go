@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"go-rest-api/models"
 	"go-rest-api/repository"
 	"go-rest-api/validator"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type IUserUsecase interface {
@@ -34,6 +36,17 @@ func (u UserUsecase) SignUp(input models.User) (models.UserResponse, error) {
 	newUser := models.User{
 		Email:    input.Email,
 		Password: string(hash),
+	}
+
+	//ユーザー情報の取得
+	existsUser := models.User{}
+	if err := u.ur.GetUserByEmail(&existsUser, input.Email); !errors.Is(err, gorm.ErrRecordNotFound) {
+		return models.UserResponse{}, err
+	}
+
+	//ユーザーが存在する場合
+	if existsUser != (models.User{}) {
+		return models.UserResponse{}, errors.New("user already exists")
 	}
 
 	if err := u.ur.CreateUser(&newUser); err != nil {

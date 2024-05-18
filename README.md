@@ -1,2 +1,3 @@
-このudemyの学習用リポジトリ
-https://www.udemy.com/course/echo-go-react-restapi/
+- web
+  - 初期設定
+    - docker compose exec web npm install && npm start
