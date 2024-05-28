@@ -17,7 +17,7 @@ export const Auth = () => {
                 .mutateAsync({ email, password })
                 .then(() => {
                     loginMutating.mutate({ email, password })
-                }).catch((error: any) => {
+                }).catch(() => {
                     alert('Failed to create a new account')
                 })
         }
@@ -44,6 +44,7 @@ export const Auth = () => {
                 <ArrowPathIcon className="w-6 h-6 my-2 text-blue-600 cursor-pointer" onClick={() => setIsLogin(!isLogin)} />
                 <span className="text-sm">{`Swith to ${isLogin ? "crating a new account" : "Login"}`}</span>
             </div>
+            <a href="/password/forgot" className="py-2 mt-4 mx-2 text-center underline">パスワード忘れた</a>
         </div>
     )
 }

@@ -11,7 +11,7 @@ func main() {
 	dbConn := db.NewDB()
 	defer fmt.Println("Successfuly Migratde")
 	defer db.CloseDB(dbConn)
-	if err := dbConn.AutoMigrate(&models.User{}, &models.Task{}); err != nil {
+	if err := dbConn.AutoMigrate(&models.User{}, &models.Task{}, &models.PasswordReset{}); err != nil {
 		log.Fatalln("migration falied")
 	}
 }

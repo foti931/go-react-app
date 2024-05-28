@@ -17,7 +17,7 @@ type JWTClaims struct {
 	Username string `json:"username"`
 }
 
-func NewRouter(uc controller.IUserController, tc controller.ITaskController) *echo.Echo {
+func NewRouter(uc controller.IUserController, tc controller.ITaskController, pc controller.IPasswordController) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -36,10 +36,15 @@ func NewRouter(uc controller.IUserController, tc controller.ITaskController) *ec
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteNoneMode,
 	}))
+	//GET
+	e.GET("/csrf", uc.CsrfToken)
+
+	//POST
 	e.POST("/signup", uc.SignUp)
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
-	e.GET("/csrf", uc.CsrfToken)
+	e.POST("/password/reset", pc.ResetPassword)
+	e.POST("/password/forgot", pc.ResetPasswordRequest)
 
 	// /tasks
 	setTaskEndpoint(e, tc)

@@ -2,8 +2,12 @@ import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Auth } from './components/Auth';
 import { ToDo } from './components/ToDo';
+import { PasswordForgot } from './components/password/Forgot';
 import axios from 'axios';
 import { CsrfToken } from './types';
+import 'semantic-ui-css/semantic.min.css'
+import { PasswordReset } from './components/password/Reset';
+
 
 function App() {
 
@@ -21,6 +25,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/todo" element={<ToDo />} />
+        <Route path="/password/forgot" element={<PasswordForgot />} />
+        <Route path="/password/reset" element={<PasswordReset />} />
+        <Route path="/password" element={<PasswordForgot />} />
       </Routes>
     </BrowserRouter>
   );

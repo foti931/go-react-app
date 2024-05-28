@@ -12,9 +12,10 @@ import (
 func main() {
 	db := db.NewDB()
 
+	passwordResetREpository := repository.NewPasswordRepository(db)
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validator.NewUserValidator()
-	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
+	userUsecase := usecase.NewUserUsecase(userRepository, passwordResetREpository, userValidator)
 	userController := controller.NewUserController(userUsecase)
 
 	taskRepository := repository.NewTaskRepository(db)
@@ -22,7 +23,12 @@ func main() {
 	taskUsecase := usecase.NewTaskUsecase(taskRepository, taskValidator)
 	taskController := controller.NewTaskController(taskUsecase)
 
-	server := router.NewRouter(userController, taskController)
+	// passwordResetValidator := validator.NewPasswordResetValidator()
+	mailRepository := repository.NewMailRepository()
+	mailUsecase := usecase.NewMailUsecase(mailRepository)
+	passwordController := controller.NewPasswordController(userUsecase, mailUsecase)
+
+	server := router.NewRouter(userController, taskController, passwordController)
 
 	server.Logger.Fatal(server.Start(":8000"))
 }

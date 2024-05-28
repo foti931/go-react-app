@@ -22,8 +22,8 @@ type userController struct {
 	uu usecase.IUserUsecase
 }
 
-func (u userController) SignUp(c echo.Context) error {
-	user := models.User{}
+func (u *userController) SignUp(c echo.Context) error {
+	user := &models.User{}
 	if err := c.Bind(&user); err != nil {
 		slog.Info(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
@@ -38,9 +38,9 @@ func (u userController) SignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, response)
 }
 
-func (u userController) LogIn(c echo.Context) error {
-	user := models.User{}
-	if err := c.Bind(&user); err != nil {
+func (u *userController) LogIn(c echo.Context) error {
+	user := &models.User{}
+	if err := c.Bind(user); err != nil {
 		slog.Info(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -56,14 +56,14 @@ func (u userController) LogIn(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (u userController) LogOut(c echo.Context) error {
+func (u *userController) LogOut(c echo.Context) error {
 
 	cookie := new(http.Cookie)
-	resetCokkie(cookie, c)
+	resetCookie(cookie, c)
 	return c.NoContent(http.StatusOK)
 }
 
-func (u userController) CsrfToken(c echo.Context) error {
+func (u *userController) CsrfToken(c echo.Context) error {
 	token := c.Get("csrf").(string)
 	return c.JSON(http.StatusOK, echo.Map{
 		"csrf_token": token,
@@ -86,7 +86,7 @@ func setCookie(cookie *http.Cookie, c echo.Context, tokenString string) {
 	c.SetCookie(cookie)
 }
 
-func resetCokkie(cookie *http.Cookie, c echo.Context) {
+func resetCookie(cookie *http.Cookie, c echo.Context) {
 	cookie.Name = "token"
 	cookie.Value = ""
 	cookie.Expires = time.Now()

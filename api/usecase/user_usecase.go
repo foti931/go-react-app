@@ -5,6 +5,7 @@ import (
 	"go-rest-api/models"
 	"go-rest-api/repository"
 	"go-rest-api/validator"
+	"log/slog"
 	"os"
 	"time"
 
@@ -14,20 +15,63 @@ import (
 )
 
 type IUserUsecase interface {
-	SignUp(user models.User) (models.UserResponse, error)
-	Login(user models.User) (string, error)
+	SignUp(user *models.User) (models.UserResponse, error)
+	Login(user *models.User) (string, error)
+	PasswordReset(email string) error
+	PasswordResetRequest(email string) (string, error)
 }
 
 type UserUsecase struct {
 	ur repository.IUserRepository
 	uv validator.IUserValidator
+	pr repository.IPasswordRespository
 }
 
-func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) IUserUsecase {
-	return &UserUsecase{ur: ur, uv: uv}
+// PasswordReset implements IUserUsecase.
+func (u *UserUsecase) PasswordReset(email string) error {
+	return nil
 }
 
-func (u UserUsecase) SignUp(input models.User) (models.UserResponse, error) {
+// PasswordResetRequest implements IUserUsecase.
+func (u *UserUsecase) PasswordResetRequest(email string) (string, error) {
+
+	//ユーザーが存在するか確認
+	existsUser := models.User{}
+	if err := u.ur.GetUserByEmail(&existsUser, email); err != nil {
+		slog.Error(err.Error())
+		return "", err
+	}
+
+	//ユーザーが存在しない場合
+	if existsUser == (models.User{}) {
+		slog.Error("user not exists")
+		return "", errors.New("user not exists")
+	}
+
+	//パスワードリセット用のjwtトークン生成
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+		// 有効期限を5分に設定
+		"exp": time.Now().Add(time.Minute * 5).Unix(),
+	})
+
+	//トークンを文字列に変換
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		slog.Error(err.Error())
+		return "", err
+	}
+
+	//パスワードリセットリクエストを作成
+	if err := u.pr.CreatePasswordResetRequest(&existsUser, tokenString); err != nil {
+		slog.Error(err.Error())
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func (u *UserUsecase) SignUp(input *models.User) (models.UserResponse, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 	if err != nil {
 		return models.UserResponse{}, err
@@ -61,7 +105,7 @@ func (u UserUsecase) SignUp(input models.User) (models.UserResponse, error) {
 	return resUser, nil
 }
 
-func (u UserUsecase) Login(input models.User) (string, error) {
+func (u *UserUsecase) Login(input *models.User) (string, error) {
 	storedUser := models.User{}
 
 	//ユーザー情報の取得
@@ -77,12 +121,18 @@ func (u UserUsecase) Login(input models.User) (string, error) {
 	//トークン生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": storedUser.ID,
-		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+		// 有効期限を12時間に設定
+		"exp": time.Now().Add(time.Hour * 12).Unix(),
 	})
+
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		return "", err
 	}
 
 	return tokenString, nil
+}
+
+func NewUserUsecase(ur repository.IUserRepository, pr repository.IPasswordRespository, uv validator.IUserValidator) IUserUsecase {
+	return &UserUsecase{ur: ur, pr: pr, uv: uv}
 }
