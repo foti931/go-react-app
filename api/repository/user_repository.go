@@ -9,10 +9,19 @@ import (
 type IUserRepository interface {
 	GetUserByEmail(user *models.User, email string) error
 	CreateUser(user *models.User) error
+	UpdateUser(user *models.User) error
 }
 
 type UserRepository struct {
 	db *gorm.DB
+}
+
+func (u UserRepository) UpdateUser(user *models.User) error {
+	if err := u.db.Save(user).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewUserRepository(db *gorm.DB) IUserRepository {

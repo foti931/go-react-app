@@ -17,33 +17,38 @@ import (
 type IUserUsecase interface {
 	SignUp(user *models.User) (models.UserResponse, error)
 	Login(user *models.User) (string, error)
-	PasswordReset(email string) error
+	UpdateUser(user *models.User) error
 	PasswordResetRequest(email string) (string, error)
 }
 
-type UserUsecase struct {
+type UserUseCase struct {
 	ur repository.IUserRepository
 	uv validator.IUserValidator
 	pr repository.IPasswordRespository
 }
 
-// PasswordReset implements IUserUsecase.
-func (u *UserUsecase) PasswordReset(email string) error {
-	return nil
+// UpdateUser PasswordReset implements IUserUseCase.
+func (u *UserUseCase) UpdateUser(user *models.User) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if err != nil {
+		return err
+	}
+	user.Password = string(hash)
+	return u.ur.UpdateUser(user)
 }
 
 // PasswordResetRequest implements IUserUsecase.
-func (u *UserUsecase) PasswordResetRequest(email string) (string, error) {
+func (u *UserUseCase) PasswordResetRequest(email string) (string, error) {
 
 	//ユーザーが存在するか確認
-	existsUser := models.User{}
-	if err := u.ur.GetUserByEmail(&existsUser, email); err != nil {
+	existsUser := &models.User{}
+	if err := u.ur.GetUserByEmail(existsUser, email); err != nil {
 		slog.Error(err.Error())
 		return "", err
 	}
 
 	//ユーザーが存在しない場合
-	if existsUser == (models.User{}) {
+	if existsUser == nil {
 		slog.Error("user not exists")
 		return "", errors.New("user not exists")
 	}
@@ -63,7 +68,7 @@ func (u *UserUsecase) PasswordResetRequest(email string) (string, error) {
 	}
 
 	//パスワードリセットリクエストを作成
-	if err := u.pr.CreatePasswordResetRequest(&existsUser, tokenString); err != nil {
+	if err := u.pr.CreatePasswordResetRequest(existsUser, tokenString); err != nil {
 		slog.Error(err.Error())
 		return "", err
 	}
@@ -71,7 +76,7 @@ func (u *UserUsecase) PasswordResetRequest(email string) (string, error) {
 	return tokenString, nil
 }
 
-func (u *UserUsecase) SignUp(input *models.User) (models.UserResponse, error) {
+func (u *UserUseCase) SignUp(input *models.User) (models.UserResponse, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 	if err != nil {
 		return models.UserResponse{}, err
@@ -105,7 +110,7 @@ func (u *UserUsecase) SignUp(input *models.User) (models.UserResponse, error) {
 	return resUser, nil
 }
 
-func (u *UserUsecase) Login(input *models.User) (string, error) {
+func (u *UserUseCase) Login(input *models.User) (string, error) {
 	storedUser := models.User{}
 
 	//ユーザー情報の取得
@@ -133,6 +138,6 @@ func (u *UserUsecase) Login(input *models.User) (string, error) {
 	return tokenString, nil
 }
 
-func NewUserUsecase(ur repository.IUserRepository, pr repository.IPasswordRespository, uv validator.IUserValidator) IUserUsecase {
-	return &UserUsecase{ur: ur, pr: pr, uv: uv}
+func NewUserUseCase(ur repository.IUserRepository, pr repository.IPasswordRespository, uv validator.IUserValidator) IUserUsecase {
+	return &UserUseCase{ur: ur, pr: pr, uv: uv}
 }

@@ -15,7 +15,7 @@ func main() {
 	passwordResetREpository := repository.NewPasswordRepository(db)
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validator.NewUserValidator()
-	userUsecase := usecase.NewUserUsecase(userRepository, passwordResetREpository, userValidator)
+	userUsecase := usecase.NewUserUseCase(userRepository, passwordResetREpository, userValidator)
 	userController := controller.NewUserController(userUsecase)
 
 	taskRepository := repository.NewTaskRepository(db)
@@ -25,8 +25,10 @@ func main() {
 
 	// passwordResetValidator := validator.NewPasswordResetValidator()
 	mailRepository := repository.NewMailRepository()
-	mailUsecase := usecase.NewMailUsecase(mailRepository)
-	passwordController := controller.NewPasswordController(userUsecase, mailUsecase)
+	mailUseCase := usecase.NewMailUsecase(mailRepository)
+	passwordRepository := repository.NewPasswordRepository(db)
+	passwordResetUseCase := usecase.NewPasswordResetUseCase(passwordRepository)
+	passwordController := controller.NewPasswordController(userUsecase, mailUseCase, passwordResetUseCase)
 
 	server := router.NewRouter(userController, taskController, passwordController)
 
