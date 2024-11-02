@@ -7,7 +7,7 @@ import axios from 'axios';
 import { CsrfToken } from './types';
 import 'semantic-ui-css/semantic.min.css'
 import { PasswordReset } from './components/password/Reset';
-
+import { NavBar } from "./components/NavBar";
 
 function App() {
 
@@ -21,15 +21,20 @@ function App() {
   }, [])
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Auth />} />
-        <Route path="/todo" element={<ToDo />} />
-        <Route path="/password/forgot" element={<PasswordForgot />} />
-        <Route path="/password/reset" element={<PasswordReset />} />
-        <Route path="/password" element={<PasswordForgot />} />
-      </Routes>
-    </BrowserRouter>
+      <>
+        <div>
+          <NavBar />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Auth />} />
+              <Route path="/todo" element={<ToDo />} />
+              <Route path="/password/forgot" element={<PasswordForgot />} />
+              <Route path="/password/reset" element={<PasswordReset />} />
+              <Route path="/password" element={<PasswordForgot />} />
+            </Routes>
+          </BrowserRouter>
+         </div>
+       </>
   );
 }
 

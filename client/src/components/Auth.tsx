@@ -1,6 +1,6 @@
-import { FormEvent, useState } from "react"
-import { useMutateAuth } from "../hooks/useMutateAuth"
-import { ArrowPathIcon, CheckBadgeIcon } from "@heroicons/react/24/solid"
+import {FormEvent, useState} from "react"
+import {useMutateAuth} from "../hooks/useMutateAuth"
+import {ArrowPathIcon, CheckBadgeIcon} from "@heroicons/react/24/solid"
 
 export const Auth = () => {
     const [email, setEmail] = useState('')

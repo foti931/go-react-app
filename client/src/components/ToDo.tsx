@@ -9,8 +9,7 @@ import { TaskItem } from "./TaskItem"
 import { useQueryClient } from "@tanstack/react-query"
 import useStore from "../store"
 import { useMutateTasks } from "../hooks/useMutateTask"
-import { FormEvent, useEffect } from "react"
-import { setInterval } from "timers/promises"
+import { FormEvent} from "react"
 
 export const ToDo = () => {
     const { logoutMutating } = useMutateAuth()
@@ -31,6 +30,7 @@ export const ToDo = () => {
             createTaskMutation.mutate({ title: editedTask.title })
         } else {
             updateTaskMutation.mutate(editedTask)
+            refetch()
         }
     }
 

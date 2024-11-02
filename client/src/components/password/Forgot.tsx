@@ -5,7 +5,7 @@ export const PasswordForgot = () => {
     const [email, setEmail] = useState('')
     const { forgotPasswordMutation } = useMutatePassword()
 
-    const submitPassworHandler = async (e: FormEvent<HTMLFormElement>) => {
+    const submitPasswordHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         await forgotPasswordMutation.mutateAsync({ email })
             .then(() => {
@@ -24,7 +24,7 @@ export const PasswordForgot = () => {
                 </svg>
                 <span className="font-bold text-2xl">パスワードを忘れた</span>
             </div>
-            <form onSubmit={submitPassworHandler}>
+            <form onSubmit={submitPasswordHandler}>
                 <div>
                     <p>登録済みのメールアドレスを入力してください。</p>
                     <input type="email" className="px-4 py-2 w-full border rounded-md" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />

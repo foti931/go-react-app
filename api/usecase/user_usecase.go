@@ -24,7 +24,7 @@ type IUserUsecase interface {
 type UserUseCase struct {
 	ur repository.IUserRepository
 	uv validator.IUserValidator
-	pr repository.IPasswordRespository
+	pr repository.IPasswordRepository
 }
 
 // UpdateUser PasswordReset implements IUserUseCase.
@@ -138,6 +138,6 @@ func (u *UserUseCase) Login(input *models.User) (string, error) {
 	return tokenString, nil
 }
 
-func NewUserUseCase(ur repository.IUserRepository, pr repository.IPasswordRespository, uv validator.IUserValidator) IUserUsecase {
+func NewUserUseCase(ur repository.IUserRepository, pr repository.IPasswordRepository, uv validator.IUserValidator) IUserUsecase {
 	return &UserUseCase{ur: ur, pr: pr, uv: uv}
 }

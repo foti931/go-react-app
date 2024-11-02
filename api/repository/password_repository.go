@@ -7,13 +7,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type IPasswordRespository interface {
+type IPasswordRepository interface {
 	CreatePasswordResetRequest(user *models.User, token string) error
-	GetPasswordResetRequest(user *models.PasswordReset) (*models.User, error)
+	GetPasswordResetRequest(request *models.PasswordReset) (*models.User, error)
+	DeleteAllPasswordResetRequest(request *models.PasswordReset) error
 }
 
 type PasswordRepository struct {
 	db *gorm.DB
+}
+
+func (p *PasswordRepository) DeleteAllPasswordResetRequest(request *models.PasswordReset) error {
+	if err := p.db.Where("user_id = ?", request.UserId).Delete(&models.PasswordReset{}); err != nil {
+		return err.Error
+	}
+	return nil
 }
 
 func (p *PasswordRepository) GetPasswordResetRequest(request *models.PasswordReset) (*models.User, error) {
@@ -28,10 +36,6 @@ func (p *PasswordRepository) GetPasswordResetRequest(request *models.PasswordRes
 	}
 
 	return user, nil
-}
-
-func NewPasswordRepository(db *gorm.DB) IPasswordRespository {
-	return &PasswordRepository{db: db}
 }
 
 // CreatePasswordResetRequest パスワード変更リクエストを作成する
@@ -50,4 +54,8 @@ func (p *PasswordRepository) CreatePasswordResetRequest(user *models.User, token
 	}
 
 	return nil
+}
+
+func NewPasswordRepository(db *gorm.DB) IPasswordRepository {
+	return &PasswordRepository{db: db}
 }

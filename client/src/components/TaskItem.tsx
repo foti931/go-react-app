@@ -4,7 +4,7 @@ import useStore from "../store";
 import { Task } from "../types";
 import { useMutateTasks } from "../hooks/useMutateTask";
 
-const TaskItemMemo: FC<Omit<Task, "created_at" | 'updated_at'>> = ({ id, title }) => {
+const TaskItemMemo: FC<Omit<Task, "created_at" | 'updated_at'>> = ({ id, title}) => {
     const updateTask = useStore((state) => state.updateEditedTask);
     const { deleteTaskMutation } = useMutateTasks();
 

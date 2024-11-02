@@ -6,15 +6,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type IUserRepository interface {
-	GetUserByEmail(user *models.User, email string) error
-	CreateUser(user *models.User) error
-	UpdateUser(user *models.User) error
-}
-
-type UserRepository struct {
-	db *gorm.DB
-}
+type (
+	IUserRepository interface {
+		GetUserByEmail(user *models.User, email string) error
+		CreateUser(user *models.User) error
+		UpdateUser(user *models.User) error
+	}
+	UserRepository struct {
+		db *gorm.DB
+	}
+)
 
 func (u UserRepository) UpdateUser(user *models.User) error {
 	if err := u.db.Save(user).Error; err != nil {
@@ -22,10 +23,6 @@ func (u UserRepository) UpdateUser(user *models.User) error {
 	}
 
 	return nil
-}
-
-func NewUserRepository(db *gorm.DB) IUserRepository {
-	return &UserRepository{db: db}
 }
 
 func (u UserRepository) GetUserByEmail(user *models.User, email string) error {
@@ -42,4 +39,8 @@ func (u UserRepository) CreateUser(user *models.User) error {
 	}
 
 	return nil
+}
+
+func NewUserRepository(db *gorm.DB) IUserRepository {
+	return &UserRepository{db: db}
 }

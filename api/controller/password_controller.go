@@ -23,11 +23,22 @@ type PasswordController struct {
 	pru usecase.IPasswordResetUseCase
 }
 
-// ResetPassword implements IPasswordController.
+type ResetRequest struct {
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+}
 
+// ResetPassword implements IPasswordController.
 func (p *PasswordController) ResetPassword(c echo.Context) error {
 	tokenString := c.QueryParam("token")
-	password := c.FormValue("password")
+	params := &ResetRequest{}
+	if err := c.Bind(params); err != nil {
+		return c.JSON(http.StatusBadRequest, "必要な情報が不足しています。再度パスワードリセットを実施してください。")
+	}
+
+	if params.Password != params.ConfirmPassword {
+		return c.JSON(http.StatusBadRequest, "パスワードが一致していません")
+	}
 
 	// クエリパラメータなし
 	if tokenString == "" {
@@ -60,17 +71,18 @@ func (p *PasswordController) ResetPassword(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "再度パスワードリセットを実施してください。")
 	}
 
-	request := models.PasswordReset{
+	request := &models.PasswordReset{
 		Email: tokenClaims["email"].(string),
 		Token: tokenString,
 	}
 
-	user, err := p.pru.GetPasswordResetRequest(&request)
+	user, err := p.pru.ResetPassword(request)
+
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	user.Password = password
+	user.Password = params.Password
 	// パスワード更新
 	if err := p.pu.UpdateUser(user); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())

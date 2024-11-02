@@ -12,10 +12,10 @@ import (
 func main() {
 	db := db.NewDB()
 
-	passwordResetREpository := repository.NewPasswordRepository(db)
+	passwordResetRepository := repository.NewPasswordRepository(db)
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validator.NewUserValidator()
-	userUsecase := usecase.NewUserUseCase(userRepository, passwordResetREpository, userValidator)
+	userUsecase := usecase.NewUserUseCase(userRepository, passwordResetRepository, userValidator)
 	userController := controller.NewUserController(userUsecase)
 
 	taskRepository := repository.NewTaskRepository(db)

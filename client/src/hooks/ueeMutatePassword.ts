@@ -28,10 +28,17 @@ export const useMutatePassword = () => {
   )
 
   const resetPasswordMutation = useMutation(
-    async (password: { password: string; token: string }) =>
+    async (request: { password: string;confirmPassword: string; token: string }) =>
       await axios.post(
         `${process.env.REACT_APP_API_URL}/password/reset`,
-        password
+          {
+              password: request.password,
+              confirm_password: request.confirmPassword,
+          },{
+            params:{
+                token: request.token
+            }
+          }
       ),
     {
       onSuccess() {

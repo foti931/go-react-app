@@ -9,9 +9,9 @@ import (
 
 func main() {
 	dbConn := db.NewDB()
-	defer fmt.Println("Successfuly Migratde")
+	defer fmt.Println("Successfully Migrate")
 	defer db.CloseDB(dbConn)
 	if err := dbConn.AutoMigrate(&models.User{}, &models.Task{}, &models.PasswordReset{}); err != nil {
-		log.Fatalln("migration falied")
+		log.Fatalln("migration failed: ", err)
 	}
 }

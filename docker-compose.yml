@@ -2,7 +2,6 @@ services:
   db:
     image: postgres:16-alpine
     container_name: go_react_app_db
-    platform: linux/amd64
     ports:
       - "5434:5432"
     environment: 
@@ -11,14 +10,11 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
       POSTGRES_DB: go_react_app
     restart: always
-#    networks:
-#      - go_react_app_network
   api:
     build: 
       context: ./docker/api
       dockerfile: Dockerfile
     container_name: go_react_app_api
-#    platform: 'linux/amd64'
     ports:
       - "8000:8000"
       - "2345:2345"
@@ -27,7 +23,6 @@ services:
       - ./docker/api/env/dev/.env:/go/src/api/.env
     depends_on:
       - db
-#    restart: always
     environment:
       - TZ=Asia/Tokyo
       - GO_ENV=dev
@@ -42,23 +37,18 @@ services:
       context: ./docker/web
       dockerfile: Dockerfile
     container_name: go_react_app_web
-#    platform: linux/amd64
     ports:
       - "3000:3000"
     volumes:
       - ./client:/usr/src/app
     depends_on:
       - api
-#    restart: always
     environment:
       - TZ=Asia/Tokyo
     tty: true
     command: npm start
-#    networks:
-#      - go_react_app_network
   mail:
     image: mailhog/mailhog:latest
-    platform: linux/amd64
     container_name: go_react_app_mail
     restart: always
     environment:
@@ -66,8 +56,15 @@ services:
     ports:
       - "8025:8025"
       - "1025:1025"
-#    networks:
-#      - go_react_app_network
-#networks:
-#  go_react_app_network:
-#    external: true
+  job:
+    build:
+      context: ./docker/job
+      dockerfile: Dockerfile
+    container_name: go_react_app_job
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./job:/usr/src/app
+    environment:
+      - TZ=Asia/Tokyo
+    tty: true

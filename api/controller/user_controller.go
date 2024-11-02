@@ -57,7 +57,6 @@ func (u *userController) LogIn(c echo.Context) error {
 }
 
 func (u *userController) LogOut(c echo.Context) error {
-
 	cookie := new(http.Cookie)
 	resetCookie(cookie, c)
 	return c.NoContent(http.StatusOK)
