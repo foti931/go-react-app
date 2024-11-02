@@ -56,15 +56,15 @@ services:
     ports:
       - "8025:8025"
       - "1025:1025"
-  job:
-    build:
-      context: ./docker/job
-      dockerfile: Dockerfile
-    container_name: go_react_app_job
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./job:/usr/src/app
-    environment:
-      - TZ=Asia/Tokyo
-    tty: true
+#  job:
+#    build:
+#      context: ./docker/job
+#      dockerfile: Dockerfile
+#    container_name: go_react_app_job
+#    ports:
+#      - "3001:3001"
+#    volumes:
+#      - ./job:/usr/src/app
+#    environment:
+#      - TZ=Asia/Tokyo
+#    tty: true

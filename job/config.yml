@@ -1,2 +1,0 @@
-postgres:
-  dsn: "postgres://admin:password@localhost:5434/go_react_app?sslmode=disable"
