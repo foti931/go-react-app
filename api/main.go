@@ -24,8 +24,7 @@ func main() {
 	taskController := controller.NewTaskController(taskUsecase)
 
 	// passwordResetValidator := validator.NewPasswordResetValidator()
-	mailRepository := repository.NewMailRepository()
-	mailUseCase := usecase.NewMailUsecase(mailRepository)
+	mailUseCase := usecase.NewMailUsecase()
 	passwordRepository := repository.NewPasswordRepository(db)
 	passwordResetUseCase := usecase.NewPasswordResetUseCase(passwordRepository)
 	passwordController := controller.NewPasswordController(userUsecase, mailUseCase, passwordResetUseCase)
